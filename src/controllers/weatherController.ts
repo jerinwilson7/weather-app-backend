@@ -1,112 +1,170 @@
-import axios from 'axios'
-import { API_KEY, POPULATION_API } from '../constants'
-import { format } from 'date-fns'
-import { ForcastType, PopulationType } from '../@types'
+import axios from "axios";
+import { API_KEY, POPULATION_API } from "../constants";
+import { format } from "date-fns";
+import { ForcastType, PopulationType } from "../@types";
 
+const formatDateTime = (timeStamp: string) => {
+  const date = new Date(timeStamp);
+  const formattedDate = format(date, "EEEE, d MMMM yyyy | hh:mm a");
+  return formattedDate;
+};
 
-const formatDateTime = (timeStamp:string)=>{
-    const date = new Date(timeStamp)
-    const formattedDate = format(date,'EEEE, d MMMM yyyy | hh:mm a')
-    return formattedDate
-}
+const isDay = (timeStamp: string) => {
+  const date = new Date(timeStamp);
+  const time = date.getHours();
+  const day = time >= 6 && time < 18;
+  return day;
+};
 
-const isDay = (timeStamp:string)=>{
-    const date = new Date(timeStamp)
-    const time = date.getHours()
-    const day = time >=6 && time < 18
-    return day
-}
+const fetchPopulation = async (city: string) => {
 
+    console.log('FETCH POPULATION')
 
-const fetchPopulation = async(city:string)=>{
-    const reqBody = {
-        city:city
-    }
-    try {
-        
-        const populationResponse = await axios.post(`${POPULATION_API}`,reqBody)
-        const populationCount = populationResponse.data.data.populationCounts
-        const populationDetails = populationCount.map((population:PopulationType)=>(
-            {
-                year:population.year,
-                count:population.value
-            }
-        ))
-        return {
-            status:true,
-            data:populationDetails,
-            message:"population fetched"
-        }
-
-  
-    } catch (error:unknown) {  
-        console.log('error :',error)
-        return {
-            status:false,
-            message:'No population data found',
-            data:(error as Error).message
-        } 
-    }  
-}
-
-  
- 
- 
- 
-
-const fetchWeather = async(city:string)=>{
-    try {
-        console.log("FETCH-WEATHER | WEATHER CONTROLLER")
-        
-        const weatherResponse = await axios.get(`http://api.weatherapi.com/v1/forecast.json?q=${city}&key=${API_KEY}&days=5`)
-
-
-        const location = weatherResponse.data.location
-        const currentWeather = weatherResponse.data.current
-        const forecast = weatherResponse.data.forecast
-
-        console.log('first')
-        console.log(isDay(location.localtime))
-
-        const dayNight = isDay(location.localtime)
-
-        const newForecast = forecast.forecastday.map((day:ForcastType)=>(
-            {
-              currentDay:format(day.date,'eeee'),  
-              date:day.date,
-              day: {
-                maxtemp:day.day.maxtemp_c,
-                mintemp:day.day.mintemp_c,
-                condition:{
-                    text:day.day.condition.text,
-                    icon:day.day.condition.icon
-                } 
-              }
-        }))
-
-  
-        const formattedDateTime = formatDateTime(location.localtime);
-        const population = await fetchPopulation(city)
- 
-        location.time = formattedDateTime
-        location.isDay = dayNight  
-     
-        return{ 
-            status:true, 
-            data:{location:location,currentWeather:currentWeather,forecast:newForecast,population:population},   
-            message:'Weather fetched successfully' 
-        }  
-    } catch (error:unknown) {  
-        return {
-            status:false,
-            message:"Unable fetch data",
-            data:(error as Error).message
-        }    
-    }   
-    
-}    
-         
+  const reqBody = {
+    city: city,
+  };
    
-  
+  try {  
+    return new Promise((resolve, reject) => {
+      axios
+        .post(`${POPULATION_API}`, reqBody)
+        .then((populationResponse) => {
+            // console.log("pop ::",populationResponse)
+          const populationCount = populationResponse.data.data.populationCounts;
+          const populationDetails = populationCount.map(
+            (population: PopulationType) => ({
+              year: population.year,
+              count: population.value,
+            })
+          );
 
-module.exports = {fetchWeather,fetchPopulation}       
+  
+ 
+ 
+          populationDetails.sort((a: PopulationType, b: PopulationType) => Number(b.year) - Number(a.year));
+          console.log(populationDetails)
+
+          resolve({
+            status: true,  
+            message: "Population data fetched",
+            data: populationDetails, 
+          });
+        })
+ 
+        .catch((error) => {
+            console.log("pop error :",error.response.data)
+
+            if (error.response && error.response.data && error.response.data.error) {
+                resolve({
+                  status: false,
+                  message: `No population data found for ${city}`,
+                  data: error.response.data.msg,
+                });
+              } else {
+                reject({
+                  status: false,
+                  message: `No population data found for ${city}`,
+                  data: error.response ? error.response.data : error.message,
+                });
+              }
+            });
+        });
+      } catch (error: unknown) {
+        console.log(error);
+        return ({
+          data: (error as Error).message,
+          status: false,
+          message: `No population data found for ${city}`,
+        });
+      }
+    };
+ 
+
+
+
+
+const fetchWeather = async (city: string) => {
+
+    console.log('FETCH WEATHER')
+
+  try {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(
+          `http://api.weatherapi.com/v1/forecast.json?q=${city}&key=${API_KEY}&days=5`
+        )
+        .then((weatherResponse) => {
+          const location = weatherResponse.data.location;
+          const currentWeather = weatherResponse.data.current;
+          const forecast = weatherResponse.data.forecast;
+
+          const dayNight = isDay(location.localtime);
+
+          const newForecast = forecast.forecastday.map((day: ForcastType) => ({
+            currentDay: format(day.date, "eeee"),
+            date: day.date,
+            day: {
+              maxtemp: day.day.maxtemp_c,
+              mintemp: day.day.mintemp_c,
+              condition: {
+                text: day.day.condition.text,
+                icon: day.day.condition.icon,
+              }, 
+            },
+          }));
+          const formattedDateTime = formatDateTime(location.localtime);
+
+          fetchPopulation(city).then((populationData) => {
+            console.log(populationData)
+            location.time = formattedDateTime;
+            location.isDay = dayNight;
+
+            resolve({
+              status: true,
+              message: "Weather fetched successfully",
+              data: { 
+                location: location,
+                currentWeather: currentWeather,
+                forecast: newForecast,
+                population: populationData,
+              },
+            });  
+          })
+          .catch((error)=>{
+            location.time = formattedDateTime;
+            location.isDay = dayNight;
+
+            resolve({
+                status: true,
+                message:"weather fetched but no population data",
+                data:{
+                    location: location,
+                    currentWeather: currentWeather,
+                    forecast: newForecast,
+                    population: {
+                        status:false,
+                        message:"no population data",
+                        data:null
+                    }
+                }
+            })
+          })
+        })
+
+        .catch((error) => {
+            console.log(error)
+        //   console.log("Error :", error);
+          reject({
+            status: false,
+            message: "Unable to fetch weather data",
+            data: error.message, 
+          });
+        });
+    });
+  } catch (error) {
+    console.log("error", error);
+    throw error
+  } 
+};
+
+module.exports = { fetchWeather, fetchPopulation };
