@@ -49,7 +49,7 @@ const fetchPopulation = async(city:string)=>{
     }  
 }
 
-   
+  
  
  
  
@@ -105,8 +105,8 @@ const fetchWeather = async(city:string)=>{
     }   
     
 }    
-        
-  
+         
+   
   
 
 module.exports = {fetchWeather,fetchPopulation}       
