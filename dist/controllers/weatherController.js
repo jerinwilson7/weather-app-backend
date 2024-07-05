@@ -88,7 +88,7 @@ const fetchWeather = (city) => __awaiter(void 0, void 0, void 0, function* () {
         return {
             status: false,
             message: "Unable fetch data",
-            data: error.message
+            data: error.message,
         };
     }
 });

@@ -78,7 +78,7 @@ const fetchWeather = async(city:string)=>{
                 maxtemp:day.day.maxtemp_c,
                 mintemp:day.day.mintemp_c,
                 condition:{
-                    text:day.day.condition.text,
+                    text:day.day.condition.text, 
                     icon:day.day.condition.icon
                 } 
               }
@@ -100,7 +100,7 @@ const fetchWeather = async(city:string)=>{
         return {
             status:false,
             message:"Unable fetch data",
-            data:(error as Error).message
+            data:(error as Error).message,
         }    
     }   
     
