@@ -15,17 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const constants_1 = require("../constants");
 const date_fns_1 = require("date-fns");
-const formatDateTime = (timeStamp) => {
-    const date = new Date(timeStamp);
-    const formattedDate = (0, date_fns_1.format)(date, "EEEE, d MMMM yyyy | hh:mm a");
-    return formattedDate;
-};
-const isDay = (timeStamp) => {
-    const date = new Date(timeStamp);
-    const time = date.getHours();
-    const day = time >= 6 && time < 18;
-    return day;
-};
+const utils_1 = require("../utils");
+// RESPONSIBLE FOR FETCHING POPULATION API
 const fetchPopulation = (city) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('FETCH POPULATION');
     const reqBody = {
@@ -36,7 +27,6 @@ const fetchPopulation = (city) => __awaiter(void 0, void 0, void 0, function* ()
             axios_1.default
                 .post(`${constants_1.POPULATION_API}`, reqBody)
                 .then((populationResponse) => {
-                // console.log("pop ::",populationResponse)
                 const populationCount = populationResponse.data.data.populationCounts;
                 const populationDetails = populationCount.map((population) => ({
                     year: population.year,
@@ -52,18 +42,12 @@ const fetchPopulation = (city) => __awaiter(void 0, void 0, void 0, function* ()
             })
                 .catch((error) => {
                 console.log("pop error :", error.response.data);
-                if (error.response && error.response.data && error.response.data.error) {
+                // *! HANDLE ERROR IF NO POPULATION DATA IS FOUND FOR THE CITY PASSED
+                if (error.response.data.error) {
                     resolve({
                         status: false,
                         message: `No population data found for ${city}`,
                         data: error.response.data.msg,
-                    });
-                }
-                else {
-                    reject({
-                        status: false,
-                        message: `No population data found for ${city}`,
-                        data: error.response ? error.response.data : error.message,
                     });
                 }
             });
@@ -78,6 +62,7 @@ const fetchPopulation = (city) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
 });
+//* RESPONSIBLE FOR FETCHING WEATHER API AND INVOKINF FUCTION THAT FETCHES POPULATION
 const fetchWeather = (city) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('FETCH WEATHER');
     try {
@@ -88,7 +73,7 @@ const fetchWeather = (city) => __awaiter(void 0, void 0, void 0, function* () {
                 const location = weatherResponse.data.location;
                 const currentWeather = weatherResponse.data.current;
                 const forecast = weatherResponse.data.forecast;
-                const dayNight = isDay(location.localtime);
+                const dayNight = (0, utils_1.isDay)(location.localtime);
                 const newForecast = forecast.forecastday.map((day) => ({
                     currentDay: (0, date_fns_1.format)(day.date, "eeee"),
                     date: day.date,
@@ -101,7 +86,7 @@ const fetchWeather = (city) => __awaiter(void 0, void 0, void 0, function* () {
                         },
                     },
                 }));
-                const formattedDateTime = formatDateTime(location.localtime);
+                const formattedDateTime = (0, utils_1.formatDateTime)(location.localtime);
                 fetchPopulation(city).then((populationData) => {
                     console.log(populationData);
                     location.time = formattedDateTime;
@@ -118,28 +103,17 @@ const fetchWeather = (city) => __awaiter(void 0, void 0, void 0, function* () {
                     });
                 })
                     .catch((error) => {
-                    location.time = formattedDateTime;
-                    location.isDay = dayNight;
+                    console.log('error :', error);
                     resolve({
-                        status: true,
-                        message: "weather fetched but no population data",
-                        data: {
-                            location: location,
-                            currentWeather: currentWeather,
-                            forecast: newForecast,
-                            population: {
-                                status: false,
-                                message: "no population data",
-                                data: null
-                            }
-                        }
+                        status: false,
+                        message: "Error fetching",
+                        data: error
                     });
                 });
             })
                 .catch((error) => {
                 console.log(error);
-                //   console.log("Error :", error);
-                reject({
+                resolve({
                     status: false,
                     message: "Unable to fetch weather data",
                     data: error.message,
@@ -153,3 +127,4 @@ const fetchWeather = (city) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 module.exports = { fetchWeather, fetchPopulation };
+// 

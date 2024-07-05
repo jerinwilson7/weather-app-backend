@@ -22,7 +22,7 @@ router.get('/',async(req,res)=>{
         });
     } catch (error:unknown) {
         console.log('sdfsdf')
-        return ({
+        return  res.json({
             status:500,
             message:'Internal Server Error',
             data:(error as Error).message

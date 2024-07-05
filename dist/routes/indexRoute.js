@@ -26,7 +26,7 @@ router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (error) {
         console.log('sdfsdf');
-        return ({
+        return res.json({
             status: 500,
             message: 'Internal Server Error',
             data: error.message

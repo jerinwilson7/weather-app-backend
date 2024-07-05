@@ -2,41 +2,34 @@ import axios from "axios";
 import { API_KEY, POPULATION_API } from "../constants";
 import { format } from "date-fns";
 import { ForcastType, PopulationType } from "../@types";
+import { formatDateTime, isDay } from "../utils";
 
-const formatDateTime = (timeStamp: string) => {
-  const date = new Date(timeStamp);
-  const formattedDate = format(date, "EEEE, d MMMM yyyy | hh:mm a");
-  return formattedDate;
-};
 
-const isDay = (timeStamp: string) => {
-  const date = new Date(timeStamp);
-  const time = date.getHours();
-  const day = time >= 6 && time < 18;
-  return day;
-};
+
+
+// RESPONSIBLE FOR FETCHING POPULATION API
 
 const fetchPopulation = async (city: string) => {
 
     console.log('FETCH POPULATION')
-
-  const reqBody = {
-    city: city,
-  };
-   
+ 
+  const reqBody = {  
+    city: city, 
+  }; 
+    
   try {  
-    return new Promise((resolve, reject) => {
-      axios
-        .post(`${POPULATION_API}`, reqBody)
-        .then((populationResponse) => {
-            // console.log("pop ::",populationResponse)
+    return new Promise((resolve, reject) => { 
+      axios 
+        .post(`${POPULATION_API}`, reqBody) 
+        .then((populationResponse) => { 
+           
           const populationCount = populationResponse.data.data.populationCounts;
           const populationDetails = populationCount.map(
             (population: PopulationType) => ({
               year: population.year,
               count: population.value,
             })
-          );
+          ); 
 
   
  
@@ -51,22 +44,21 @@ const fetchPopulation = async (city: string) => {
           });
         })
  
+
+        
         .catch((error) => {
             console.log("pop error :",error.response.data)
 
-            if (error.response && error.response.data && error.response.data.error) {
+            
+            // *! HANDLE ERROR IF NO POPULATION DATA IS FOUND FOR THE CITY PASSED
+
+            if (error.response.data.error) {
                 resolve({
                   status: false,
                   message: `No population data found for ${city}`,
                   data: error.response.data.msg,
-                });
-              } else {
-                reject({
-                  status: false,
-                  message: `No population data found for ${city}`,
-                  data: error.response ? error.response.data : error.message,
-                });
-              }
+                });  
+              } 
             });
         });
       } catch (error: unknown) {
@@ -76,12 +68,15 @@ const fetchPopulation = async (city: string) => {
           status: false,
           message: `No population data found for ${city}`,
         });
-      }
+      } 
     };
+ 
+
  
 
 
 
+//* RESPONSIBLE FOR FETCHING WEATHER API AND INVOKINF FUCTION THAT FETCHES POPULATION
 
 const fetchWeather = async (city: string) => {
 
@@ -131,30 +126,19 @@ const fetchWeather = async (city: string) => {
             });  
           })
           .catch((error)=>{
-            location.time = formattedDateTime;
-            location.isDay = dayNight;
+           console.log('error :',error) 
 
-            resolve({
-                status: true,
-                message:"weather fetched but no population data",
-                data:{
-                    location: location,
-                    currentWeather: currentWeather,
-                    forecast: newForecast,
-                    population: {
-                        status:false,
-                        message:"no population data",
-                        data:null
-                    }
-                }
-            })
+           resolve({
+            status: false,
+            message: "Error fetching",
+            data:error
+           })
           })
-        })
+        })  
 
         .catch((error) => {
             console.log(error)
-        //   console.log("Error :", error);
-          reject({
+          resolve({
             status: false,
             message: "Unable to fetch weather data",
             data: error.message, 
@@ -168,3 +152,5 @@ const fetchWeather = async (city: string) => {
 };
 
 module.exports = { fetchWeather, fetchPopulation };
+
+// 
