@@ -20,9 +20,15 @@ router.get('/',async(req,res)=>{
             message: response.message,
             data: response.data
         });
-    } catch (error) {
-        console.error('Error handling request:', error);
+    } catch (error:unknown) {
+        console.log('sdfsdf')
+        return ({
+            status:500,
+            message:'Internal Server Error',
+            data:(error as Error).message
+        })
+        // console.error('Error handling request:', error);
     }
 }) 
     
-export default router   
+export default router     
