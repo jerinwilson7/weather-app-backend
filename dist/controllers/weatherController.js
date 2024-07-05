@@ -26,26 +26,70 @@ const isDay = (timeStamp) => {
     const day = time >= 6 && time < 18;
     return day;
 };
+const fetchPopulation = (city) => __awaiter(void 0, void 0, void 0, function* () {
+    const reqBody = {
+        city: city
+    };
+    try {
+        const populationResponse = yield axios_1.default.post(`${constants_1.POPULATION_API}`, reqBody);
+        const populationCount = populationResponse.data.data.populationCounts;
+        const populationDetails = populationCount.map((population) => ({
+            year: population.year,
+            count: population.value
+        }));
+        return {
+            status: true,
+            data: populationDetails,
+            message: "population fetched"
+        };
+    }
+    catch (error) {
+        console.log('error :', error);
+        return {
+            status: false,
+            message: 'No population data found',
+            data: error.message
+        };
+    }
+});
 const fetchWeather = (city) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("FETCH-WEATHER | WEATHER CONTROLLER");
-        const weatherResponse = yield axios_1.default.get(`http://api.weatherapi.com/v1/current.json?q=${city}&key=${constants_1.API_KEY}`);
+        const weatherResponse = yield axios_1.default.get(`http://api.weatherapi.com/v1/forecast.json?q=${city}&key=${constants_1.API_KEY}&days=5`);
         const location = weatherResponse.data.location;
         const currentWeather = weatherResponse.data.current;
+        const forecast = weatherResponse.data.forecast;
         console.log('first');
         console.log(isDay(location.localtime));
         const dayNight = isDay(location.localtime);
+        const newForecast = forecast.forecastday.map((day) => ({
+            currentDay: (0, date_fns_1.format)(day.date, 'eeee'),
+            date: day.date,
+            day: {
+                maxtemp: day.day.maxtemp_c,
+                mintemp: day.day.mintemp_c,
+                condition: {
+                    text: day.day.condition.text,
+                    icon: day.day.condition.icon
+                }
+            }
+        }));
         const formattedDateTime = formatDateTime(location.localtime);
+        const population = yield fetchPopulation(city);
         location.time = formattedDateTime;
         location.isDay = dayNight;
         return {
             status: true,
-            data: { location: location, currentWeather: currentWeather, },
-            message: 'city fetched successfully'
+            data: { location: location, currentWeather: currentWeather, forecast: newForecast, population: population },
+            message: 'Weather fetched successfully'
         };
     }
     catch (error) {
-        console.log("error :", error);
+        return {
+            status: false,
+            message: "Unable fetch data",
+            data: error.message
+        };
     }
 });
-module.exports = { fetchWeather };
+module.exports = { fetchWeather, fetchPopulation };

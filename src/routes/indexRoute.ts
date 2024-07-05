@@ -14,6 +14,7 @@ router.get('/',async(req,res)=>{
         const city = String(req.query.city) || 'Default City';
         console.log(city)
         const response = await fetchWeather(city)
+       
        return res.json({
             status:response.status,
             message: response.message,
@@ -22,6 +23,6 @@ router.get('/',async(req,res)=>{
     } catch (error) {
         console.error('Error handling request:', error);
     }
-})
-  
+}) 
+    
 export default router   
