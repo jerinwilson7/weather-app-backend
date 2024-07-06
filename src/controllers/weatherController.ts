@@ -7,7 +7,7 @@ import { formatDateTime, isDay } from "../utils";
 
 
 
-// RESPONSIBLE FOR FETCHING POPULATION API
+//* RESPONSIBLE FOR FETCHING POPULATION API
 
 const fetchPopulation = async (city: string) => {
 
@@ -50,7 +50,7 @@ const fetchPopulation = async (city: string) => {
             console.log("pop error :",error.response.data)
 
             
-            // *! HANDLE ERROR IF NO POPULATION DATA IS FOUND FOR THE CITY PASSED
+            // * HANDLE ERROR IF NO POPULATION DATA IS FOUND FOR THE CITY PASSED
 
             if (error.response.data.error) {
                 resolve({
@@ -153,4 +153,3 @@ const fetchWeather = async (city: string) => {
 
 module.exports = { fetchWeather, fetchPopulation };
 
-// 

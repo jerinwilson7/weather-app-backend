@@ -16,7 +16,7 @@ const axios_1 = __importDefault(require("axios"));
 const constants_1 = require("../constants");
 const date_fns_1 = require("date-fns");
 const utils_1 = require("../utils");
-// RESPONSIBLE FOR FETCHING POPULATION API
+//* RESPONSIBLE FOR FETCHING POPULATION API
 const fetchPopulation = (city) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('FETCH POPULATION');
     const reqBody = {
@@ -42,7 +42,7 @@ const fetchPopulation = (city) => __awaiter(void 0, void 0, void 0, function* ()
             })
                 .catch((error) => {
                 console.log("pop error :", error.response.data);
-                // *! HANDLE ERROR IF NO POPULATION DATA IS FOUND FOR THE CITY PASSED
+                // * HANDLE ERROR IF NO POPULATION DATA IS FOUND FOR THE CITY PASSED
                 if (error.response.data.error) {
                     resolve({
                         status: false,
@@ -127,4 +127,3 @@ const fetchWeather = (city) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 module.exports = { fetchWeather, fetchPopulation };
-// 
