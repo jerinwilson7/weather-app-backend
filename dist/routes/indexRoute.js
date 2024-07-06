@@ -15,9 +15,9 @@ const router = (0, express_1.Router)();
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Api");
     try {
-        const city = String(req.query.city) || 'Default City';
-        console.log(city);
-        const response = yield fetchWeather(city);
+        const data = req.query.data;
+        console.log(data);
+        const response = yield fetchWeather(data);
         return res.json({
             status: response.status,
             message: response.message,

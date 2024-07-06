@@ -11,9 +11,9 @@ router.get('/',async(req,res)=>{
     console.log("Api")
    
     try {
-        const city = String(req.query.city) || 'Default City';
-        console.log(city)
-        const response = await fetchWeather(city)
+        const data = req.query.data;
+        console.log(data)
+        const response =  await fetchWeather(data)
        
        return res.json({
             status:response.status,

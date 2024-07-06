@@ -22,3 +22,9 @@ export type PopulationType ={
     year:string,
     value:string
 }
+
+export type weatherDataType={
+    city?:string
+    latitude?: number,
+    longitude?: number,
+}

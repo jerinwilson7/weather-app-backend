@@ -1,7 +1,7 @@
 import axios from "axios";
 import { API_KEY, POPULATION_API } from "../constants";
 import { format } from "date-fns";
-import { ForcastType, PopulationType } from "../@types";
+import { ForcastType, PopulationType, weatherDataType } from "../@types";
 import { formatDateTime, isDay } from "../utils";
 
 
@@ -78,20 +78,24 @@ const fetchPopulation = async (city: string) => {
 
 //* RESPONSIBLE FOR FETCHING WEATHER API AND INVOKINF FUCTION THAT FETCHES POPULATION
 
-const fetchWeather = async (city: string) => {
+const fetchWeather = async (data:weatherDataType) => {
 
     console.log('FETCH WEATHER')
-
+ 
   try {
     return new Promise((resolve, reject) => {
+ 
       axios
-        .get(
-          `http://api.weatherapi.com/v1/forecast.json?q=${city}&key=${API_KEY}&days=5`
+        .get(data.city?
+          `http://api.weatherapi.com/v1/forecast.json?q=${data.city}&key=${API_KEY}&days=5`:
+          `http://api.weatherapi.com/v1/forecast.json?q=${data.latitude},${data.longitude}&key=${API_KEY}&days=5`
         )
         .then((weatherResponse) => {
           const location = weatherResponse.data.location;
           const currentWeather = weatherResponse.data.current;
           const forecast = weatherResponse.data.forecast;
+
+
 
           const dayNight = isDay(location.localtime);
 
@@ -109,7 +113,8 @@ const fetchWeather = async (city: string) => {
           }));
           const formattedDateTime = formatDateTime(location.localtime);
 
-          fetchPopulation(city).then((populationData) => {
+
+          fetchPopulation(location.name).then((populationData) => {
             console.log(populationData)
             location.time = formattedDateTime;
             location.isDay = dayNight;

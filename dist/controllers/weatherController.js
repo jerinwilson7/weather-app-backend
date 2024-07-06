@@ -63,12 +63,14 @@ const fetchPopulation = (city) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 //* RESPONSIBLE FOR FETCHING WEATHER API AND INVOKINF FUCTION THAT FETCHES POPULATION
-const fetchWeather = (city) => __awaiter(void 0, void 0, void 0, function* () {
+const fetchWeather = (data) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('FETCH WEATHER');
     try {
         return new Promise((resolve, reject) => {
             axios_1.default
-                .get(`http://api.weatherapi.com/v1/forecast.json?q=${city}&key=${constants_1.API_KEY}&days=5`)
+                .get(data.city ?
+                `http://api.weatherapi.com/v1/forecast.json?q=${data.city}&key=${constants_1.API_KEY}&days=5` :
+                `http://api.weatherapi.com/v1/forecast.json?q=${data.latitude},${data.longitude}&key=${constants_1.API_KEY}&days=5`)
                 .then((weatherResponse) => {
                 const location = weatherResponse.data.location;
                 const currentWeather = weatherResponse.data.current;
@@ -87,7 +89,7 @@ const fetchWeather = (city) => __awaiter(void 0, void 0, void 0, function* () {
                     },
                 }));
                 const formattedDateTime = (0, utils_1.formatDateTime)(location.localtime);
-                fetchPopulation(city).then((populationData) => {
+                fetchPopulation(location.name).then((populationData) => {
                     console.log(populationData);
                     location.time = formattedDateTime;
                     location.isDay = dayNight;
