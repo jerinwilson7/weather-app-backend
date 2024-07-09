@@ -33,7 +33,6 @@ const fetchPopulation = (city) => __awaiter(void 0, void 0, void 0, function* ()
                     count: population.value,
                 }));
                 populationDetails.sort((a, b) => Number(b.year) - Number(a.year));
-                console.log(populationDetails);
                 resolve({
                     status: true,
                     message: "Population data fetched",
@@ -41,7 +40,6 @@ const fetchPopulation = (city) => __awaiter(void 0, void 0, void 0, function* ()
                 });
             })
                 .catch((error) => {
-                console.log("pop error :", error.response.data);
                 // * HANDLE ERROR IF NO POPULATION DATA IS FOUND FOR THE CITY PASSED
                 if (error.response.data.error) {
                     resolve({
@@ -62,7 +60,7 @@ const fetchPopulation = (city) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
 });
-//* RESPONSIBLE FOR FETCHING WEATHER API AND INVOKINF FUCTION THAT FETCHES POPULATION
+//* RESPONSIBLE FOR FETCHING WEATHER API AND INVOKING FUCTION THAT FETCHES POPULATION
 const fetchWeather = (data) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('FETCH WEATHER');
     try {
@@ -70,7 +68,7 @@ const fetchWeather = (data) => __awaiter(void 0, void 0, void 0, function* () {
             axios_1.default
                 .get(data.city ?
                 `http://api.weatherapi.com/v1/forecast.json?q=${data.city}&key=${constants_1.API_KEY}&days=5` :
-                `http://api.weatherapi.com/v1/forecast.json?q=${data.latitude},${data.longitude}&key=${constants_1.API_KEY}&days=5`)
+                `http://api.weatherapi.com/v1/forecast.json?q=${Number(data.latitude)},${Number(data.longitude)}&key=${constants_1.API_KEY}&days=5`)
                 .then((weatherResponse) => {
                 const location = weatherResponse.data.location;
                 const currentWeather = weatherResponse.data.current;
@@ -128,4 +126,4 @@ const fetchWeather = (data) => __awaiter(void 0, void 0, void 0, function* () {
         throw error;
     }
 });
-module.exports = { fetchWeather, fetchPopulation };
+module.exports = { fetchWeather };

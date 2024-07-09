@@ -11,12 +11,12 @@ import { formatDateTime, isDay } from "../utils";
 
 const fetchPopulation = async (city: string) => {
 
-    console.log('FETCH POPULATION')
+    console.log('FETCH POPULATION') 
  
-  const reqBody = {  
-    city: city, 
-  }; 
-    
+  const reqBody = {   
+    city: city,  
+  };  
+         
   try {  
     return new Promise((resolve, reject) => { 
       axios 
@@ -35,19 +35,17 @@ const fetchPopulation = async (city: string) => {
  
  
           populationDetails.sort((a: PopulationType, b: PopulationType) => Number(b.year) - Number(a.year));
-          console.log(populationDetails)
 
           resolve({
             status: true,  
-            message: "Population data fetched",
+            message: "Population data fetched", 
             data: populationDetails, 
           });
         })
  
-
+ 
         
-        .catch((error) => {
-            console.log("pop error :",error.response.data)
+        .catch((error) => { 
 
             
             // * HANDLE ERROR IF NO POPULATION DATA IS FOUND FOR THE CITY PASSED
@@ -76,7 +74,7 @@ const fetchPopulation = async (city: string) => {
 
 
 
-//* RESPONSIBLE FOR FETCHING WEATHER API AND INVOKINF FUCTION THAT FETCHES POPULATION
+//* RESPONSIBLE FOR FETCHING WEATHER API AND INVOKING FUCTION THAT FETCHES POPULATION
 
 const fetchWeather = async (data:weatherDataType) => {
 
@@ -88,21 +86,22 @@ const fetchWeather = async (data:weatherDataType) => {
       axios
         .get(data.city?
           `http://api.weatherapi.com/v1/forecast.json?q=${data.city}&key=${API_KEY}&days=5`:
-          `http://api.weatherapi.com/v1/forecast.json?q=${data.latitude},${data.longitude}&key=${API_KEY}&days=5`
+          `http://api.weatherapi.com/v1/forecast.json?q=${Number(data.latitude)},${Number(data.longitude)}&key=${API_KEY}&days=5`
+         
         )
         .then((weatherResponse) => {
           const location = weatherResponse.data.location;
           const currentWeather = weatherResponse.data.current;
-          const forecast = weatherResponse.data.forecast;
+          const forecast = weatherResponse.data.forecast; 
 
 
 
           const dayNight = isDay(location.localtime);
-
+ 
           const newForecast = forecast.forecastday.map((day: ForcastType) => ({
-            currentDay: format(day.date, "eeee"),
+            currentDay: format(day.date, "eeee"),  
             date: day.date,
-            day: {
+            day: {  
               maxtemp: day.day.maxtemp_c,
               mintemp: day.day.mintemp_c,
               condition: {
@@ -156,5 +155,5 @@ const fetchWeather = async (data:weatherDataType) => {
   } 
 };
 
-module.exports = { fetchWeather, fetchPopulation };
+module.exports = { fetchWeather };
 

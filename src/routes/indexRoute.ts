@@ -7,7 +7,7 @@ const {fetchWeather} = require('../controllers/weatherController')
 const router = Router()
 
 
-router.get('/',async(req,res)=>{
+router.get('/',async(req,res,next)=>{    
     console.log("Api")
    
     try {
@@ -15,20 +15,19 @@ router.get('/',async(req,res)=>{
         console.log(data)
         const response =  await fetchWeather(data)
        
-       return res.json({
+       return res.json({   
             status:response.status,
             message: response.message,
             data: response.data
         });
-    } catch (error:unknown) {
-        console.log('sdfsdf')
-        return  res.json({
-            status:500,
-            message:'Internal Server Error',
-            data:(error as Error).message
-        })
-        // console.error('Error handling request:', error);
+    } catch (error:unknown) { 
+        next(error)
+        // return  res.json({
+        //     status:500,
+        //     message:'Internal Server Error',
+        //     data:(error as Error).message
+        // })
     }
 }) 
     
-export default router     
+export default router                   

@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const { fetchWeather } = require('../controllers/weatherController');
 const router = (0, express_1.Router)();
-router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Api");
     try {
         const data = req.query.data;
@@ -25,13 +25,12 @@ router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (error) {
-        console.log('sdfsdf');
-        return res.json({
-            status: 500,
-            message: 'Internal Server Error',
-            data: error.message
-        });
-        // console.error('Error handling request:', error);
+        next(error);
+        // return  res.json({
+        //     status:500,
+        //     message:'Internal Server Error',
+        //     data:(error as Error).message
+        // })
     }
 }));
 exports.default = router;
