@@ -88,7 +88,6 @@ const fetchWeather = (data) => __awaiter(void 0, void 0, void 0, function* () {
                 }));
                 const formattedDateTime = (0, utils_1.formatDateTime)(location.localtime);
                 fetchPopulation(location.name).then((populationData) => {
-                    console.log(populationData);
                     location.time = formattedDateTime;
                     location.isDay = dayNight;
                     resolve({

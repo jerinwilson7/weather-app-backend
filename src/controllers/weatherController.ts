@@ -1,7 +1,7 @@
 import axios from "axios";
 import { API_KEY, POPULATION_API } from "../constants";
 import { format } from "date-fns";
-import { ForcastType, PopulationType, weatherDataType } from "../@types";
+import { ForcastType, PopulationType, WeatherDataType,  } from "../@types";
 import { formatDateTime, isDay } from "../utils";
 
 
@@ -69,14 +69,14 @@ const fetchPopulation = async (city: string) => {
       } 
     };
  
-
- 
-
-
+  
+       
+  
+  
 
 //* RESPONSIBLE FOR FETCHING WEATHER API AND INVOKING FUCTION THAT FETCHES POPULATION
 
-const fetchWeather = async (data:weatherDataType) => {
+const fetchWeather = async (data:WeatherDataType) => { 
 
     console.log('FETCH WEATHER')
  
@@ -102,7 +102,7 @@ const fetchWeather = async (data:weatherDataType) => {
             currentDay: format(day.date, "eeee"),  
             date: day.date,
             day: {  
-              maxtemp: day.day.maxtemp_c,
+              maxtemp: day.day.maxtemp_c, 
               mintemp: day.day.mintemp_c,
               condition: {
                 text: day.day.condition.text,
@@ -113,8 +113,7 @@ const fetchWeather = async (data:weatherDataType) => {
           const formattedDateTime = formatDateTime(location.localtime);
 
 
-          fetchPopulation(location.name).then((populationData) => {
-            console.log(populationData)
+          fetchPopulation(location.name).then((populationData) => { 
             location.time = formattedDateTime;
             location.isDay = dayNight;
 

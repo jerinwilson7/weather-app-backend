@@ -1,5 +1,5 @@
 
-type condition={
+type Condition={
     text:string;
     icon:string;
 }
@@ -7,7 +7,7 @@ type condition={
 type Day = {
     maxtemp_c:number
     mintemp_c:number;
-    condition:condition
+    condition:Condition
 }
 
 
@@ -23,8 +23,8 @@ export type PopulationType ={
     value:string
 }
 
-export type weatherDataType={
+export type WeatherDataType={
     city?:string
     latitude?: number,
     longitude?: number,
-}
+}   
