@@ -72,10 +72,10 @@ const fetchPopulation = async (city: string) => {
   
        
   
-  
+   
 
 //* RESPONSIBLE FOR FETCHING WEATHER API AND INVOKING FUCTION THAT FETCHES POPULATION
-
+ 
 const fetchWeather = async (data:WeatherDataType) => { 
 
     console.log('FETCH WEATHER')
@@ -151,8 +151,8 @@ const fetchWeather = async (data:WeatherDataType) => {
   } catch (error) {
     console.log("error", error);
     throw error
-  } 
-};
-
+  }  
+}; 
+  
 module.exports = { fetchWeather };
 

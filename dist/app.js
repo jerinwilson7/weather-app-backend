@@ -15,7 +15,7 @@ app.use((0, cors_1.default)({
     methods: ['GET', 'POST', 'options'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-app.use("/api", indexRoute_1.default);
+app.use("/details", indexRoute_1.default);
 app.use(express_1.default.json());
 app.use(() => {
     throw (0, http_errors_1.default)(404, "Route Not Found");

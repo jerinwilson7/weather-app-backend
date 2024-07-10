@@ -15,7 +15,7 @@ app.use(cors({
     methods: ['GET', 'POST','options'], 
     allowedHeaders: ['Content-Type', 'Authorization'], 
 }));
-app.use("/api",indexRouter)
+app.use("/details",indexRouter)
 
 
 app.use(express.json());
